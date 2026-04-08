@@ -1,0 +1,39 @@
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #fff;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family:
+    "Noto Sans Symbols 2", "Segoe UI Symbol", "Apple Symbols", sans-serif;
+}
+
+.hexagram-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+  width: min(960px, 100%);
+  max-width: 960px;
+}
+
+.hexagram-grid a {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  color: #111;
+  font-size: 2.75rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.hexagram-grid a:hover,
+.hexagram-grid a:focus-visible {
+  outline: none;
+}
