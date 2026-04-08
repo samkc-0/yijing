@@ -113,7 +113,7 @@ body {
   height: 100%;
   padding: clamp(1rem, 3vmin, 2rem);
   box-sizing: border-box;
-  border: 1px solid #111;
+  /*  border: 1px solid #111; */
 }
 
 .chapter-kicker,

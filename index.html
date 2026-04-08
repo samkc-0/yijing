@@ -81,8 +81,10 @@
             <h1 class="chapter-title" id="chapter-title">第01卦 乾</h1>
             <p class="chapter-symbol" id="chapter-symbol">䷀</p>
             <div class="chapter-copy" id="chapter-copy">
-              <p>天地玄黃，宇宙洪荒。日月盈昃，辰宿列張。寒來暑往，秋收冬藏。此處暫為章節占位，用以承接卦辭、彖傳、象傳與後續注解。</p>
-              <p>雲騰致雨，露結為霜。金生麗水，玉出崑岡。若此頁日後接入正文，版面可在此延展出段落、註腳、異文與今譯。</p>
+              <p>乾：元亨，利貞。</p>
+              <p>彖傳：大哉乾元，萬物資始，乃統天。雲行雨施，品物流形。大明始終，六位時成，時乘六龍以御天。乾道變化，各正性命，保合大和，乃利貞。首出庶物，萬國咸寧。</p>
+              <p>象傳：天行健，君子以自強不息。</p>
+              <p>初九：潛龍，勿用。九二：見龍在田，利見大人。九三：君子終日乾乾，夕惕若，厲，无咎。九四：或躍在淵，无咎。九五：飛龍在天，利見大人。上九：亢龍有悔。用九：見群龍无首，吉。</p>
             </div>
             <button class="chapter-close" id="chapter-close" type="button">返回卦盤</button>
           </div>
@@ -104,16 +106,26 @@
         "龍師火帝，鳥官人皇。推步陰陽，裁成文理。今先置漢文假稿，使翻面之後有篇章氣息，待真實內容補入時再行替換。"
       ];
 
+      const chapterText = {
+        "01": [
+          "乾：元亨，利貞。",
+          "彖傳：大哉乾元，萬物資始，乃統天。雲行雨施，品物流形。大明始終，六位時成，時乘六龍以御天。乾道變化，各正性命，保合大和，乃利貞。首出庶物，萬國咸寧。",
+          "象傳：天行健，君子以自強不息。",
+          "初九：潛龍，勿用。九二：見龍在田，利見大人。九三：君子終日乾乾，夕惕若，厲，无咎。九四：或躍在淵，无咎。九五：飛龍在天，利見大人。上九：亢龍有悔。用九：見群龍无首，吉。"
+        ]
+      };
+
       function openChapter(link) {
         const match = link.getAttribute("href")?.match(/(\\d+)/);
         const number = match ? match[1] : "01";
         const hanzi = link.querySelector(".hanzi")?.textContent?.trim() || "";
         const mark = link.querySelector(".symbol")?.textContent?.trim() || "";
+        const paragraphs = chapterText[number] || fillerParagraphs;
 
-        kicker.textContent = "易經 占位章節";
+        kicker.textContent = number === "01" ? "易經 乾卦" : "易經 占位章節";
         title.textContent = `第${number}卦 ${hanzi}`;
         symbol.textContent = mark;
-        copy.innerHTML = fillerParagraphs
+        copy.innerHTML = paragraphs
           .map((paragraph) => `<p>${paragraph}</p>`)
           .join("");
 
