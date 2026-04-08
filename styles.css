@@ -9,18 +9,43 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 0;
   box-sizing: border-box;
   font-family:
     "Noto Sans Symbols 2", "Segoe UI Symbol", "Apple Symbols", sans-serif;
 }
 
+.scene {
+  width: min(72vmin, calc(100vmin - 24px));
+  aspect-ratio: 1;
+  perspective: 1800px;
+}
+
+.board-cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 1100ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.board-cube.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
 .hexagram-grid {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 1px;
-  width: min(960px, 100%);
-  max-width: 960px;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
 }
 
 .hexagram-grid a {
@@ -28,12 +53,112 @@ body {
   place-items: center;
   aspect-ratio: 1;
   color: #111;
-  font-size: 2.75rem;
-  line-height: 1;
   text-decoration: none;
+  perspective: 900px;
+  overflow: hidden;
+}
+
+.hexagram-label {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.symbol,
+.hanzi {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+  line-height: 1;
+}
+
+.symbol {
+  font-size: clamp(1.6rem, 2.8vw, 2.75rem);
+  transform: rotateY(0deg) translateZ(1.25rem);
+}
+
+.hanzi {
+  font-size: clamp(0.9rem, 1.6vw, 1.4rem);
+  letter-spacing: 0.04em;
+  transform: rotateY(180deg) translateZ(1.25rem);
+}
+
+.hexagram-grid a:hover .hexagram-label,
+.hexagram-grid a:focus-visible .hexagram-label {
+  transform: rotateY(180deg);
 }
 
 .hexagram-grid a:hover,
 .hexagram-grid a:focus-visible {
   outline: none;
+}
+
+.chapter-detail {
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 2.5vmin, 1.5rem);
+  box-sizing: border-box;
+  background: #fff;
+  transform: rotateY(180deg);
+}
+
+.chapter-frame {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1rem, 3vmin, 2rem);
+  box-sizing: border-box;
+  border: 1px solid #111;
+}
+
+.chapter-kicker,
+.chapter-title,
+.chapter-symbol,
+.chapter-copy {
+  margin: 0;
+}
+
+.chapter-kicker {
+  font-size: clamp(0.75rem, 1.3vmin, 0.95rem);
+  letter-spacing: 0.16em;
+}
+
+.chapter-title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.25rem, 2.6vmin, 2rem);
+  font-weight: 400;
+}
+
+.chapter-symbol {
+  margin-top: 0.75rem;
+  font-size: clamp(2rem, 4.8vmin, 3.5rem);
+  line-height: 1;
+}
+
+.chapter-copy {
+  margin-top: 1rem;
+  overflow: auto;
+  font-size: clamp(0.95rem, 1.9vmin, 1.2rem);
+  line-height: 1.8;
+}
+
+.chapter-copy p + p {
+  margin-top: 0.9rem;
+}
+
+.chapter-close {
+  justify-self: start;
+  margin-top: 1rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111;
+  font: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
 }
