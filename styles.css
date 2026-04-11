@@ -13,6 +13,15 @@ body {
   box-sizing: border-box;
   font-family:
     "Noto Sans Symbols 2", "Segoe UI Symbol", "Apple Symbols", sans-serif;
+  transition: background-color 240ms ease;
+}
+
+body.showing-chapter {
+  background: #fff;
+}
+
+body.showing-chapter.mouse-outside-scene {
+  background: silver;
 }
 
 .scene {
@@ -107,6 +116,7 @@ body {
   box-sizing: border-box;
   background: #fff;
   transform: rotateY(180deg);
+  cursor: pointer;
 }
 
 .chapter-frame {

@@ -75,7 +75,7 @@
           <a href="#hexagram-63" aria-label="Hexagram 63 既濟"><span class="hexagram-label"><span class="symbol" aria-hidden="true">䷾</span><span class="hanzi" aria-hidden="true">既濟</span></span></a>
           <a href="#hexagram-64" aria-label="Hexagram 64 未濟"><span class="hexagram-label"><span class="symbol" aria-hidden="true">䷿</span><span class="hanzi" aria-hidden="true">未濟</span></span></a>
         </main>
-        <section class="face chapter-detail" aria-live="polite">
+        <section class="face chapter-detail" id="chapter-detail" aria-live="polite">
           <div class="chapter-frame">
             <p class="chapter-kicker" id="chapter-kicker">易經</p>
             <h1 class="chapter-title" id="chapter-title">第01卦 乾</h1>
@@ -94,11 +94,13 @@
     <script>
       const cube = document.getElementById("board-cube");
       const grid = document.querySelector(".hexagram-grid");
+      const scene = document.querySelector(".scene");
       const title = document.getElementById("chapter-title");
       const kicker = document.getElementById("chapter-kicker");
       const symbol = document.getElementById("chapter-symbol");
       const copy = document.getElementById("chapter-copy");
       const closeButton = document.getElementById("chapter-close");
+      const chapterDetail = document.getElementById("chapter-detail");
 
       const fillerParagraphs = [
         "天地玄黃，宇宙洪荒。日月盈昃，辰宿列張。寒來暑往，秋收冬藏。此處暫為章節占位，用以承接卦辭、彖傳、象傳與後續注解。",
@@ -130,6 +132,14 @@
           .join("");
 
         cube.classList.add("is-flipped");
+        document.body.classList.add("showing-chapter");
+        document.body.classList.remove("mouse-outside-scene");
+      }
+
+      function closeChapter() {
+        cube.classList.remove("is-flipped");
+        document.body.classList.remove("showing-chapter");
+        document.body.classList.remove("mouse-outside-scene");
       }
 
       grid.addEventListener("click", (event) => {
@@ -143,7 +153,25 @@
       });
 
       closeButton.addEventListener("click", () => {
-        cube.classList.remove("is-flipped");
+        closeChapter();
+      });
+
+      chapterDetail.addEventListener("click", (event) => {
+        if (event.target.closest(".chapter-close")) {
+          return;
+        }
+
+        closeChapter();
+      });
+
+      scene.addEventListener("mouseleave", () => {
+        if (document.body.classList.contains("showing-chapter")) {
+          document.body.classList.add("mouse-outside-scene");
+        }
+      });
+
+      scene.addEventListener("mouseenter", () => {
+        document.body.classList.remove("mouse-outside-scene");
       });
     </script>
   </body>
