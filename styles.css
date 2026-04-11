@@ -87,14 +87,13 @@ body.showing-chapter.mouse-outside-scene {
 }
 
 .symbol {
-  font-size: clamp(1.6rem, 2.8vw, 2.75rem);
+  font-size: clamp(1.6rem, 3.8vw, 3.75rem);
   transform: rotateY(0deg) translateZ(1.25rem);
 }
 
 .hanzi {
   font-size: clamp(0.9rem, 1.6vw, 1.4rem);
   letter-spacing: 0.04em;
-  writing-mode: vertical-rl;
   text-orientation: upright;
   transform: rotateY(180deg) translateZ(1.25rem);
 }
