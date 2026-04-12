@@ -1,0 +1,10 @@
+services:
+  yijing:
+    build:
+      context: .
+    image: ${IMAGE:-yijing}
+    environment:
+      ADDR: :8088
+      BOOK_DIR: /app/book
+    ports:
+      - "${PORT:-8088}:8088"
