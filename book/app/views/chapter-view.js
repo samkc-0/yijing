@@ -1,3 +1,7 @@
+function stripPunctuationForDisplay(text) {
+  return text.replace(/[\p{P}\p{S}]/gu, "");
+}
+
 export function renderChapterView({ chapter, onDismiss }) {
   const screen = document.createElement("main");
   screen.className = "screen chapter-screen";
@@ -30,7 +34,7 @@ export function renderChapterView({ chapter, onDismiss }) {
 
     const cell = document.createElement("td");
     cell.className = "chapter-line-cell";
-    cell.textContent = line;
+    cell.textContent = stripPunctuationForDisplay(line);
 
     row.appendChild(cell);
     bodyGroup.appendChild(row);
