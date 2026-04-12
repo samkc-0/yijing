@@ -1,8 +1,10 @@
 const KING_WEN_COUNT = 64;
-const VERTEX_STRIDE = 4;
+const VERTEX_STRIDE = 5;
 const VERTICES_PER_QUAD = 6;
 const COLUMN_SPACING_RATIO = 0.86;
 const GLYPH_SCALE = 1.12;
+const ATLAS_FONT_RATIO = 0.9;
+const FACE_OUT_DURATION_MS = 520;
 
 function rotate(values, offset) {
   const index = ((offset % values.length) + values.length) % values.length;
@@ -39,10 +41,13 @@ function createProgram(gl) {
     `
       attribute vec2 a_position;
       attribute vec2 a_uv;
+      attribute float a_alpha;
       varying vec2 v_uv;
+      varying float v_alpha;
 
       void main() {
         v_uv = a_uv;
+        v_alpha = a_alpha;
         gl_Position = vec4(a_position, 0.0, 1.0);
       }
     `,
@@ -55,11 +60,12 @@ function createProgram(gl) {
       precision mediump float;
 
       varying vec2 v_uv;
+      varying float v_alpha;
       uniform sampler2D u_texture;
 
       void main() {
         float alpha = texture2D(u_texture, v_uv).a;
-        gl_FragColor = vec4(vec3(0.0), alpha);
+        gl_FragColor = vec4(vec3(0.0), alpha * v_alpha);
       }
     `,
   );
@@ -92,7 +98,7 @@ function createAtlas(chapters, tileSize) {
   context.fillStyle = "#000";
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.font = `${Math.round(tileSize * 0.76)}px serif`;
+  context.font = `${Math.round(tileSize * ATLAS_FONT_RATIO)}px serif`;
 
   chapters.forEach((chapter, index) => {
     const column = index % 8;
@@ -159,6 +165,7 @@ export function renderContentsView({ chapters, onSelect }) {
   const buffer = gl.createBuffer();
   const positionLocation = gl.getAttribLocation(program, "a_position");
   const uvLocation = gl.getAttribLocation(program, "a_uv");
+  const alphaLocation = gl.getAttribLocation(program, "a_alpha");
   const textureLocation = gl.getUniformLocation(program, "u_texture");
 
   let atlas = null;
@@ -168,6 +175,7 @@ export function renderContentsView({ chapters, onSelect }) {
   let currentTimeSeconds = 0;
   let vertexCapacity = 0;
   let vertexData = new Float32Array(0);
+  let transitionState = null;
 
   function computeLayout() {
     const width = screen.clientWidth || window.innerWidth || 1280;
@@ -241,7 +249,7 @@ export function renderContentsView({ chapters, onSelect }) {
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
 
-  function pushQuad(layout, chapterIndex, left, top, size, offset) {
+  function pushQuad(layout, chapterIndex, left, top, width, height, alpha, offset) {
     const atlasColumn = chapterIndex % 8;
     const atlasRow = Math.floor(chapterIndex / 8);
     const uvSize = 1 / 8;
@@ -251,17 +259,17 @@ export function renderContentsView({ chapters, onSelect }) {
     const v1 = v0 + uvSize;
 
     const x0 = (left / layout.width) * 2 - 1;
-    const x1 = ((left + size) / layout.width) * 2 - 1;
+    const x1 = ((left + width) / layout.width) * 2 - 1;
     const y0 = 1 - (top / layout.height) * 2;
-    const y1 = 1 - ((top + size) / layout.height) * 2;
+    const y1 = 1 - ((top + height) / layout.height) * 2;
 
     const quad = [
-      x0, y0, u0, v0,
-      x1, y0, u1, v0,
-      x0, y1, u0, v1,
-      x0, y1, u0, v1,
-      x1, y0, u1, v0,
-      x1, y1, u1, v1,
+      x0, y0, u0, v0, alpha,
+      x1, y0, u1, v0, alpha,
+      x0, y1, u0, v1, alpha,
+      x0, y1, u0, v1, alpha,
+      x1, y0, u1, v0, alpha,
+      x1, y1, u1, v1, alpha,
     ];
 
     vertexData.set(quad, offset);
@@ -281,9 +289,16 @@ export function renderContentsView({ chapters, onSelect }) {
     }
 
     let offset = 0;
+    const nowMs = timestamp;
+    const transition = transitionState;
+    const frozenTimeSeconds = transition ? transition.frozenTimeSeconds : currentTimeSeconds;
+    const faceOutProgress = transition
+      ? Math.min(1, (nowMs - transition.startMs) / FACE_OUT_DURATION_MS)
+      : 0;
 
-    for (const column of layout.columns) {
-      const drift = mod(column.startOffset + currentTimeSeconds * column.speed, layout.cycleHeight);
+    for (let columnIndex = 0; columnIndex < layout.columns.length; columnIndex += 1) {
+      const column = layout.columns[columnIndex];
+      const drift = mod(column.startOffset + frozenTimeSeconds * column.speed, layout.cycleHeight);
       const firstRow = Math.floor((-drift - layout.cellSize) / layout.cellSize);
       const lastRow = firstRow + layout.rowsVisible;
 
@@ -296,7 +311,18 @@ export function renderContentsView({ chapters, onSelect }) {
 
         const chapterIndex = mod(row, KING_WEN_COUNT);
         const chapter = column.sequence[chapterIndex];
-        pushQuad(layout, Number(chapter.id) - 1, column.x, top, layout.glyphSize, offset);
+        const isSelected =
+          transition &&
+          columnIndex === transition.selectedColumnIndex &&
+          chapter.id === transition.chapterId &&
+          row === transition.selectedRow;
+
+        const turnProgress = isSelected ? 0 : faceOutProgress;
+        const width = Math.max(layout.glyphSize * (1 - turnProgress), 0.75);
+        const left = column.x + (layout.glyphSize - width) / 2;
+        const alpha = isSelected ? 1 : 1 - faceOutProgress * 0.95;
+
+        pushQuad(layout, Number(chapter.id) - 1, left, top, width, layout.glyphSize, alpha, offset);
         offset += VERTICES_PER_QUAD * VERTEX_STRIDE;
       }
     }
@@ -312,6 +338,8 @@ export function renderContentsView({ chapters, onSelect }) {
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, VERTEX_STRIDE * 4, 0);
     gl.enableVertexAttribArray(uvLocation);
     gl.vertexAttribPointer(uvLocation, 2, gl.FLOAT, false, VERTEX_STRIDE * 4, 2 * 4);
+    gl.enableVertexAttribArray(alphaLocation);
+    gl.vertexAttribPointer(alphaLocation, 1, gl.FLOAT, false, VERTEX_STRIDE * 4, 4 * 4);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -321,11 +349,18 @@ export function renderContentsView({ chapters, onSelect }) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.drawArrays(gl.TRIANGLES, 0, offset / VERTEX_STRIDE);
 
+    if (transitionState && nowMs - transitionState.startMs >= FACE_OUT_DURATION_MS) {
+      const chapterId = transitionState.chapterId;
+      transitionState = null;
+      onSelect(chapterId);
+      return;
+    }
+
     animationFrame = window.requestAnimationFrame(renderFrame);
   }
 
   function handlePointer(event) {
-    if (!lastLayout) {
+    if (!lastLayout || transitionState) {
       return;
     }
 
@@ -351,7 +386,13 @@ export function renderContentsView({ chapters, onSelect }) {
     const chapter = column.sequence[mod(row, KING_WEN_COUNT)];
 
     if (chapter) {
-      onSelect(chapter.id);
+      transitionState = {
+        chapterId: chapter.id,
+        startMs: performance.now(),
+        frozenTimeSeconds: currentTimeSeconds,
+        selectedColumnIndex: columnIndex,
+        selectedRow: row,
+      };
     }
   }
 
