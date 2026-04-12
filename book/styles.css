@@ -1,0 +1,164 @@
+:root {
+  color-scheme: only light;
+  --bg: #fff;
+  --fg: #000;
+  --hex-size: clamp(2.4rem, 4vw, 3.5rem);
+  --chapter-width: min(92vw, 58rem);
+  --line-gap: clamp(1rem, 2vh, 1.5rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Times New Roman", Times, serif;
+}
+
+body {
+  overflow: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.screen {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.contents-screen {
+  overflow: hidden;
+}
+
+.contents-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.contents-fallback {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
+  gap: 0;
+  place-items: center;
+  align-content: center;
+  width: min(100vw, 72rem);
+  margin: 0 auto;
+}
+
+.hexagram-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--hex-size);
+  height: var(--hex-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: calc(var(--hex-size) * 0.9);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hexagram-button:focus-visible {
+  outline: 1px solid var(--fg);
+  outline-offset: -0.15rem;
+}
+
+.chapter-screen {
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+}
+
+.chapter-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.chapter-body {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--chapter-width);
+  min-height: min(86vh, 48rem);
+  padding: clamp(2.5rem, 8vw, 5rem) clamp(1.5rem, 5vw, 3rem);
+  text-align: center;
+  cursor: default;
+}
+
+.chapter-glyph {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(16rem, 38vw, 34rem);
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.chapter-lines {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--line-gap);
+  width: 100%;
+}
+
+.chapter-line {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.45rem);
+  line-height: 1.5;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --hex-size: 2.8rem;
+  }
+
+  .chapter-screen {
+    padding: 1rem;
+  }
+
+  .chapter-body {
+    min-height: auto;
+  }
+
+  .chapter-glyph {
+    font-size: min(78vw, 22rem);
+  }
+}
