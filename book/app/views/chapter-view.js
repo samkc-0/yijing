@@ -15,7 +15,7 @@ export function renderChapterView({ chapter, onDismiss }) {
   const body = document.createElement("article");
   body.className = "chapter-body";
   body.setAttribute("aria-labelledby", `chapter-heading-${chapter.id}`);
-  body.addEventListener("click", (event) => event.stopPropagation());
+  body.addEventListener("click", () => onDismiss());
 
   const heading = document.createElement("h1");
   heading.id = `chapter-heading-${chapter.id}`;
@@ -41,6 +41,7 @@ export function renderChapterView({ chapter, onDismiss }) {
   }
 
   table.appendChild(bodyGroup);
+  table.addEventListener("click", (event) => event.stopPropagation());
   body.appendChild(table);
   screen.appendChild(body);
 
