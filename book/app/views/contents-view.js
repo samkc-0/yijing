@@ -170,6 +170,8 @@ export function renderContentsView({ chapters, onSelect }) {
   let vertexCapacity = 0;
   let vertexData = new Float32Array(0);
   let transitionState = null;
+  let hoverState = null;
+  let currentInstances = [];
 
   function computeLayout() {
     const width = screen.clientWidth || window.innerWidth || 1280;
@@ -269,6 +271,60 @@ export function renderContentsView({ chapters, onSelect }) {
     vertexData.set(quad, offset);
   }
 
+  function pickInstance(x, y, options = {}) {
+    const {
+      timeSeconds = currentTimeSeconds,
+    } = options;
+
+    if (!lastLayout) {
+      return null;
+    }
+
+    const layout = lastLayout;
+    const transition = transitionState;
+    const frozenTimeSeconds = transition ? transition.frozenTimeSeconds : timeSeconds;
+
+    for (let columnIndex = 0; columnIndex < layout.columns.length; columnIndex += 1) {
+      const column = layout.columns[columnIndex];
+      const drift = mod(column.startOffset + frozenTimeSeconds * column.speed, layout.cycleHeight);
+      const firstRow = Math.floor((-drift - layout.cellSize) / layout.cellSize);
+      const lastRow = firstRow + layout.rowsVisible;
+
+      for (let row = firstRow; row <= lastRow; row += 1) {
+        const top = row * layout.cellSize + drift;
+
+        if (top < -layout.cellSize || top > layout.height) {
+          continue;
+        }
+
+        const left = column.x;
+        const right = left + layout.glyphSize;
+        const bottom = top + layout.glyphSize;
+
+        if (x < left || x > right || y < top || y > bottom) {
+          continue;
+        }
+
+        const chapterIndex = mod(row, KING_WEN_COUNT);
+        const chapter = column.sequence[chapterIndex];
+
+        return {
+          chapter,
+          chapterId: chapter.id,
+          columnIndex,
+          row,
+          left,
+          right,
+          top,
+          bottom,
+          drift,
+        };
+      }
+    }
+
+    return null;
+  }
+
   function renderFrame(timestamp) {
     currentTimeSeconds = timestamp / 1000;
     resize();
@@ -289,6 +345,7 @@ export function renderContentsView({ chapters, onSelect }) {
     const faceOutProgress = transition
       ? Math.min(1, (nowMs - transition.startMs) / FACE_OUT_DURATION_MS)
       : 0;
+    currentInstances = [];
 
     for (let columnIndex = 0; columnIndex < layout.columns.length; columnIndex += 1) {
       const column = layout.columns[columnIndex];
@@ -310,11 +367,26 @@ export function renderContentsView({ chapters, onSelect }) {
           columnIndex === transition.selectedColumnIndex &&
           chapter.id === transition.chapterId &&
           row === transition.selectedRow;
+        const isHovered = hoverState && columnIndex === hoverState.columnIndex && row === hoverState.row;
 
         const turnProgress = isSelected ? 0 : faceOutProgress;
         const width = Math.max(layout.glyphSize * (1 - turnProgress), 0.75);
         const left = column.x + (layout.glyphSize - width) / 2;
-        const alpha = isSelected ? 1 : 1 - faceOutProgress * 0.95;
+        let alpha = isSelected ? 1 : 1 - faceOutProgress * 0.95;
+
+        if (isHovered && !transition) {
+          alpha *= 0.5;
+        }
+
+        currentInstances.push({
+          chapterId: chapter.id,
+          columnIndex,
+          row,
+          left,
+          right: left + width,
+          top,
+          bottom: top + layout.glyphSize,
+        });
 
         pushQuad(layout, Number(chapter.id) - 1, left, top, width, layout.glyphSize, alpha, offset);
         offset += VERTICES_PER_QUAD * VERTEX_STRIDE;
@@ -361,39 +433,65 @@ export function renderContentsView({ chapters, onSelect }) {
     const bounds = canvas.getBoundingClientRect();
     const x = event.clientX - bounds.left;
     const y = event.clientY - bounds.top;
+    const hit = pickInstance(x, y, { timeSeconds: currentTimeSeconds });
 
-    const gridRight = lastLayout.startX + (lastLayout.columnCount - 1) * lastLayout.columnSpacing + lastLayout.glyphSize;
-
-    if (x < lastLayout.startX || x > gridRight) {
-      return;
-    }
-
-    const columnIndex = Math.floor((x - lastLayout.startX) / lastLayout.columnSpacing);
-    const column = lastLayout.columns[columnIndex];
-
-    if (!column) {
-      return;
-    }
-
-    const drift = mod(column.startOffset + currentTimeSeconds * column.speed, lastLayout.cycleHeight);
-    const row = Math.floor((y - drift) / lastLayout.cellSize);
-    const chapter = column.sequence[mod(row, KING_WEN_COUNT)];
-
-    if (chapter) {
+    if (hit) {
       transitionState = {
-        chapterId: chapter.id,
+        chapterId: hit.chapterId,
         startMs: performance.now(),
         frozenTimeSeconds: currentTimeSeconds,
-        selectedColumnIndex: columnIndex,
-        selectedRow: row,
+        selectedColumnIndex: hit.columnIndex,
+        selectedRow: hit.row,
       };
+      hoverState = null;
     }
+  }
+
+  function updateHover(event) {
+    if (!lastLayout || transitionState) {
+      hoverState = null;
+      return;
+    }
+
+    const bounds = canvas.getBoundingClientRect();
+    const x = event.clientX - bounds.left;
+    const y = event.clientY - bounds.top;
+
+    if (x < 0 || x > bounds.width || y < 0 || y > bounds.height) {
+      hoverState = null;
+      return;
+    }
+    const hit = pickInstance(x, y, { timeSeconds: currentTimeSeconds });
+
+    if (!hit) {
+      hoverState = null;
+      return;
+    }
+
+    if (hoverState && hoverState.columnIndex === hit.columnIndex) {
+      hoverState = {
+        ...hoverState,
+        row: hit.row,
+      };
+      return;
+    }
+
+    hoverState = {
+      columnIndex: hit.columnIndex,
+      row: hit.row,
+    };
+  }
+
+  function clearHover() {
+    hoverState = null;
   }
 
   function destroy() {
     window.cancelAnimationFrame(animationFrame);
     window.removeEventListener("resize", resize);
     canvas.removeEventListener("click", handlePointer);
+    canvas.removeEventListener("pointermove", updateHover);
+    canvas.removeEventListener("pointerleave", clearHover);
 
     gl.deleteBuffer(buffer);
     gl.deleteProgram(program);
@@ -405,6 +503,8 @@ export function renderContentsView({ chapters, onSelect }) {
 
   window.addEventListener("resize", resize);
   canvas.addEventListener("click", handlePointer);
+  canvas.addEventListener("pointermove", updateHover);
+  canvas.addEventListener("pointerleave", clearHover);
   animationFrame = window.requestAnimationFrame(renderFrame);
 
   return { node: screen, destroy };
