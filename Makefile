@@ -1,15 +1,15 @@
 APP := yijing
-BIN_DIR := bin
-BIN := $(BIN_DIR)/$(APP)
+IMAGE := $(APP)
+PORT ?= 8088
+DOCKER ?= docker
 
 .PHONY: build run clean
 
 build:
-	mkdir -p $(BIN_DIR)
-	go build -o $(BIN) .
+	$(DOCKER) build -t $(IMAGE) .
 
 run: build
-	./$(BIN)
+	$(DOCKER) run --rm -p $(PORT):8088 $(IMAGE)
 
 clean:
-	rm -f $(BIN)
+	-$(DOCKER) rmi $(IMAGE)

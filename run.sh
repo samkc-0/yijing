@@ -2,11 +2,11 @@
 set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-BIN="$ROOT_DIR/bin/yijing"
+IMAGE=${IMAGE:-yijing}
+PORT=${PORT:-8088}
+DOCKER=${DOCKER:-docker}
 
-if [ ! -x "$BIN" ]; then
-  mkdir -p "$ROOT_DIR/bin"
-  go build -o "$BIN" "$ROOT_DIR"
-fi
+cd "$ROOT_DIR"
 
-exec "$BIN"
+"$DOCKER" build -t "$IMAGE" .
+exec "$DOCKER" run --rm -p "$PORT:8088" "$IMAGE"
