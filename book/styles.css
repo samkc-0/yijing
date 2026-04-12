@@ -108,18 +108,21 @@ select {
   cursor: default;
 }
 
-.chapter-lines {
+.chapter-lines-table {
   position: relative;
   z-index: 1;
-  display: grid;
-  gap: var(--line-gap);
   width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: var(--bg);
 }
 
-.chapter-line {
-  margin: 0;
+.chapter-line-cell {
+  border: 1px solid var(--fg);
+  padding: 0.9rem 1rem;
   font-size: clamp(1rem, 2vw, 1.45rem);
   line-height: 1.5;
+  text-align: center;
 }
 
 .visually-hidden {

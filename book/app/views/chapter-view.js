@@ -19,17 +19,25 @@ export function renderChapterView({ chapter, onDismiss }) {
   heading.textContent = `${chapter.id} ${chapter.heading}`;
   body.appendChild(heading);
 
-  const lines = document.createElement("div");
-  lines.className = "chapter-lines";
+  const table = document.createElement("table");
+  table.className = "chapter-lines-table";
+
+  const bodyGroup = document.createElement("tbody");
 
   for (const line of chapter.lines) {
-    const paragraph = document.createElement("p");
-    paragraph.className = "chapter-line";
-    paragraph.textContent = line;
-    lines.appendChild(paragraph);
+    const row = document.createElement("tr");
+    row.className = "chapter-line-row";
+
+    const cell = document.createElement("td");
+    cell.className = "chapter-line-cell";
+    cell.textContent = line;
+
+    row.appendChild(cell);
+    bodyGroup.appendChild(row);
   }
 
-  body.appendChild(lines);
+  table.appendChild(bodyGroup);
+  body.appendChild(table);
   screen.appendChild(body);
 
   return {
