@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	addr := envOrDefault("ADDR", ":8020")
+	addr := envOrDefault("ADDR", ":8088")
 	bookDir := envOrDefault("BOOK_DIR", "book")
 
 	handler, err := newServer(bookDir)
