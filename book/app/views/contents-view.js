@@ -1,6 +1,8 @@
 const KING_WEN_COUNT = 64;
 const VERTEX_STRIDE = 4;
 const VERTICES_PER_QUAD = 6;
+const COLUMN_SPACING_RATIO = 0.86;
+const GLYPH_SCALE = 1.12;
 
 function rotate(values, offset) {
   const index = ((offset % values.length) + values.length) % values.length;
@@ -172,9 +174,11 @@ export function renderContentsView({ chapters, onSelect }) {
     const height = screen.clientHeight || window.innerHeight || 720;
     const dpr = window.devicePixelRatio || 1;
     const cellSize = Math.max(34, Math.min(64, Math.round(width / 24)));
-    const columnCount = Math.max(12, Math.ceil(width / cellSize) + 2);
+    const columnSpacing = cellSize * COLUMN_SPACING_RATIO;
+    const glyphSize = cellSize * GLYPH_SCALE;
+    const columnCount = Math.max(12, Math.ceil(width / columnSpacing) + 2);
     const rowsVisible = Math.ceil(height / cellSize) + 3;
-    const gridWidth = columnCount * cellSize;
+    const gridWidth = (columnCount - 1) * columnSpacing + glyphSize;
     const startX = (width - gridWidth) / 2;
     const cycleHeight = chapters.length * cellSize;
 
@@ -182,7 +186,7 @@ export function renderContentsView({ chapters, onSelect }) {
       sequence: buildColumnSequence(chapters, index),
       speed: cellSize * (0.85 + ((index * 17) % 7) * 0.08),
       startOffset: (index * cellSize * 5) % cycleHeight,
-      x: startX + index * cellSize,
+      x: startX + index * columnSpacing,
     }));
 
     return {
@@ -190,6 +194,8 @@ export function renderContentsView({ chapters, onSelect }) {
       height,
       dpr,
       cellSize,
+      glyphSize,
+      columnSpacing,
       columnCount,
       rowsVisible,
       cycleHeight,
@@ -290,7 +296,7 @@ export function renderContentsView({ chapters, onSelect }) {
 
         const chapterIndex = mod(row, KING_WEN_COUNT);
         const chapter = column.sequence[chapterIndex];
-        pushQuad(layout, Number(chapter.id) - 1, column.x, top, layout.cellSize, offset);
+        pushQuad(layout, Number(chapter.id) - 1, column.x, top, layout.glyphSize, offset);
         offset += VERTICES_PER_QUAD * VERTEX_STRIDE;
       }
     }
@@ -327,11 +333,13 @@ export function renderContentsView({ chapters, onSelect }) {
     const x = event.clientX - bounds.left;
     const y = event.clientY - bounds.top;
 
-    if (x < lastLayout.startX || x > lastLayout.startX + lastLayout.columnCount * lastLayout.cellSize) {
+    const gridRight = lastLayout.startX + (lastLayout.columnCount - 1) * lastLayout.columnSpacing + lastLayout.glyphSize;
+
+    if (x < lastLayout.startX || x > gridRight) {
       return;
     }
 
-    const columnIndex = Math.floor((x - lastLayout.startX) / lastLayout.cellSize);
+    const columnIndex = Math.floor((x - lastLayout.startX) / lastLayout.columnSpacing);
     const column = lastLayout.columns[columnIndex];
 
     if (!column) {
