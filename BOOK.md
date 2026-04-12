@@ -12,5 +12,6 @@ The hexagrams are moving like matrix rain and infinite and tightly packed, but a
 
 chapter page/component:
 it is just the 6 lines of the chapter, lined up over a big version of their hexagram. You go back to the contents page (the one with the hexagrams) by clicking outside the text body.
+The chapter layout must always fit entirely on screen on mobile, tablet, and desktop, with no page scrolling or internal scrolling.
 
 the book should be designed such that it is easy to redesign chapters/components later. i.e. swap out the chapter component file with a different one, and we will still be able to render from contents, and vice versa.

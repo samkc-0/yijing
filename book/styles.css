@@ -4,10 +4,10 @@
   --fg: #000;
   --hex-size: clamp(2.4rem, 4vw, 3.5rem);
   --chapter-width: calc(100vw - 0.02rem);
-  --chapter-cell-font: clamp(1.02rem, 3.9vw, 1.3rem);
-  --chapter-cell-min-height: min(14rem, calc(100vh - 1.25rem));
-  --chapter-cell-padding-block: 0.7rem;
-  --chapter-cell-padding-inline: 0.55rem;
+  --chapter-cell-font: clamp(1.12rem, 4.2vw, 1.42rem);
+  --chapter-cell-min-height: min(13.75rem, calc(100vh - 0.75rem));
+  --chapter-cell-padding-block: 0.62rem;
+  --chapter-cell-padding-inline: 0.48rem;
 }
 
 * {
@@ -165,10 +165,10 @@ select {
 
 @media (min-width: 641px) {
   :root {
-    --chapter-cell-font: clamp(1.12rem, 2vw, 1.55rem);
-    --chapter-cell-min-height: min(18rem, calc(100vh - 1.5rem));
-    --chapter-cell-padding-block: 0.85rem;
-    --chapter-cell-padding-inline: 0.65rem;
+    --chapter-cell-font: clamp(1.24rem, 2.25vw, 1.72rem);
+    --chapter-cell-min-height: min(17.5rem, calc(100vh - 0.8rem));
+    --chapter-cell-padding-block: 0.76rem;
+    --chapter-cell-padding-inline: 0.56rem;
     --chapter-width: min(100vw, 72rem);
   }
 
@@ -185,10 +185,10 @@ select {
 @media (min-width: 1025px) {
   :root {
     --chapter-width: min(100vw, 96rem);
-    --chapter-cell-font: clamp(1.28rem, 1.45vw, 1.9rem);
-    --chapter-cell-min-height: min(24rem, calc(100vh - 1rem));
-    --chapter-cell-padding-block: 1rem;
-    --chapter-cell-padding-inline: 0.75rem;
+    --chapter-cell-font: clamp(1.42rem, 1.7vw, 2.08rem);
+    --chapter-cell-min-height: min(23.5rem, calc(100vh - 0.4rem));
+    --chapter-cell-padding-block: 0.88rem;
+    --chapter-cell-padding-inline: 0.62rem;
   }
 
   .chapter-screen {
