@@ -119,7 +119,8 @@ select {
 .chapter-lines-table {
   position: relative;
   z-index: 1;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
   background: var(--bg);
   writing-mode: vertical-rl;
@@ -127,10 +128,11 @@ select {
   max-width: 100vw;
   max-height: 100%;
   margin: 0;
+  border: 1px solid var(--fg);
 }
 
 .chapter-line-cell {
-  border: 1px solid var(--fg);
+  border: 0;
   padding: var(--chapter-cell-padding-block) var(--chapter-cell-padding-inline);
   font-size: var(--chapter-cell-font);
   line-height: 1.45;
@@ -139,6 +141,10 @@ select {
   min-height: var(--chapter-cell-min-height);
   vertical-align: top;
   animation: chapter-border-in 700ms ease-out both;
+}
+
+.chapter-line-row + .chapter-line-row .chapter-line-cell {
+  border-right: 1px solid var(--fg);
 }
 
 .visually-hidden {
