@@ -2,18 +2,12 @@ const KING_WEN_COUNT = 64;
 const VERTEX_STRIDE = 5;
 const VERTICES_PER_QUAD = 6;
 const COLUMN_SPACING_RATIO = 0.86;
-const GLYPH_SCALE = 1.12;
-const ATLAS_FONT_RATIO = 0.9;
+const GLYPH_SCALE = 1.28;
+const ATLAS_FONT_RATIO = 0.98;
 const FACE_OUT_DURATION_MS = 520;
 
-function rotate(values, offset) {
-  const index = ((offset % values.length) + values.length) % values.length;
-  return values.slice(index).concat(values.slice(0, index));
-}
-
 function buildColumnSequence(chapters, columnIndex) {
-  const rotated = rotate(chapters, columnIndex * 7);
-  return columnIndex % 2 === 0 ? rotated : [...rotated].reverse();
+  return chapters;
 }
 
 function mod(value, length) {
