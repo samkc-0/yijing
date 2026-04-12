@@ -9,44 +9,21 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 0;
+  padding: 12px;
   box-sizing: border-box;
   font-family:
     "Noto Sans Symbols 2", "Segoe UI Symbol", "Apple Symbols", sans-serif;
-  transition: background-color 240ms ease;
 }
 
 body.showing-chapter {
   background: #fff;
 }
 
-body.showing-chapter.mouse-outside-scene {
-  background: inherit;
-}
-
 .scene {
+  position: relative;
   width: min(72vmin, calc(100vmin - 24px));
   height: min(72vmin, calc(100vmin - 24px));
-  perspective: 1800px;
-  overflow: hidden;
-}
-
-.board-cube {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 1100ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.board-cube.is-flipped {
-  transform: rotateY(180deg);
-}
-
-.face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
+  overflow: clip;
 }
 
 .hexagram-grid {
@@ -64,97 +41,88 @@ body.showing-chapter.mouse-outside-scene {
   aspect-ratio: 1;
   color: #111;
   text-decoration: none;
-  perspective: 900px;
   overflow: hidden;
 }
 
 .hexagram-label {
-  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 0.2rem;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .symbol,
 .hanzi {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  backface-visibility: hidden;
+  display: block;
   line-height: 1;
 }
 
 .symbol {
   font-size: clamp(1.6rem, 3.8vw, 3.75rem);
-  transform: rotateY(0deg) translateZ(1.25rem);
 }
 
 .hanzi {
   font-size: clamp(0.9rem, 1.6vw, 1.4rem);
   letter-spacing: 0.04em;
-  text-orientation: upright;
-  transform: rotateY(180deg) translateZ(1.25rem);
-}
-
-.hexagram-grid a:hover .hexagram-label,
-.hexagram-grid a:focus-visible .hexagram-label {
-  transform: rotateY(180deg);
+  opacity: 0.7;
 }
 
 .hexagram-grid a:hover,
 .hexagram-grid a:focus-visible {
   outline: none;
+  background: #f5f5f5;
 }
 
 .chapter-detail {
-  display: grid;
+  position: absolute;
+  inset: 0;
+  display: none;
   place-items: center;
   padding: clamp(1rem, 2.5vmin, 1.5rem);
   box-sizing: border-box;
-  background: #fff;
-  transform: rotateY(180deg);
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+body.showing-chapter .chapter-detail {
+  display: grid;
 }
 
 .chapter-frame {
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: auto 1fr;
   width: 100%;
   height: 100%;
   padding: clamp(1rem, 3vmin, 2rem);
   box-sizing: border-box;
-  border-radius: px;
-  /*  border: 1px solid #111; */
+  background: #fff;
+  border: 1px solid #111;
 }
 
-.chapter-kicker,
 .chapter-title,
 .chapter-symbol,
 .chapter-copy {
   margin: 0;
 }
 
-.chapter-kicker {
-  font-size: clamp(0.75rem, 1.3vmin, 0.95rem);
-  letter-spacing: 0.16em;
+.chapter-copy {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  min-height: 0;
 }
 
 .chapter-title {
-  margin-top: 0.5rem;
   font-size: clamp(1.25rem, 2.6vmin, 2rem);
   font-weight: 400;
 }
 
 .chapter-symbol {
-  margin-top: 0.75rem;
+  margin: 0.75rem 0 1rem;
   font-size: clamp(2rem, 4.8vmin, 3.5rem);
   line-height: 1;
 }
 
-.chapter-copy {
-  margin-top: 1rem;
+.chapter-body {
   overflow: auto;
   font-size: clamp(0.95rem, 1.9vmin, 1.2rem);
   line-height: 1.8;
@@ -162,13 +130,13 @@ body.showing-chapter.mouse-outside-scene {
   text-orientation: mixed;
 }
 
-.chapter-copy p + p {
+.chapter-body p + p {
   margin-right: 0.9rem;
 }
 
 .chapter-close {
   justify-self: start;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   padding: 0;
   border: 0;
   background: transparent;
