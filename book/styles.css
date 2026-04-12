@@ -106,6 +106,8 @@ select {
   padding: clamp(2.5rem, 8vw, 5rem) clamp(1.5rem, 5vw, 3rem);
   text-align: center;
   cursor: default;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 300;
 }
 
 .chapter-lines-table {
@@ -120,9 +122,10 @@ select {
 .chapter-line-cell {
   border: 1px solid var(--fg);
   padding: 0.9rem 1rem;
-  font-size: clamp(1rem, 2vw, 1.45rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
   line-height: 1.5;
   text-align: left;
+  font-weight: 300;
 }
 
 .visually-hidden {
