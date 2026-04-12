@@ -117,15 +117,20 @@ select {
   border-collapse: collapse;
   table-layout: fixed;
   background: var(--bg);
+  writing-mode: vertical-rl;
+  width: auto;
+  max-width: 100%;
 }
 
 .chapter-line-cell {
   border: 1px solid var(--fg);
-  padding: 0.9rem 1rem;
+  padding: 1rem 0.8rem;
   font-size: clamp(1.2rem, 2.4vw, 1.75rem);
   line-height: 1.5;
-  text-align: left;
+  text-align: start;
   font-weight: 300;
+  min-height: 18rem;
+  vertical-align: top;
 }
 
 .visually-hidden {
