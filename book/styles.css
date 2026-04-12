@@ -108,17 +108,6 @@ select {
   cursor: default;
 }
 
-.chapter-glyph {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
-  font-size: clamp(16rem, 38vw, 34rem);
-  line-height: 1;
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-}
-
 .chapter-lines {
   position: relative;
   z-index: 1;
@@ -158,7 +147,4 @@ select {
     min-height: auto;
   }
 
-  .chapter-glyph {
-    font-size: min(78vw, 22rem);
-  }
 }

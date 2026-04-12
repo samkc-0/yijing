@@ -19,12 +19,6 @@ export function renderChapterView({ chapter, onDismiss }) {
   heading.textContent = `${chapter.id} ${chapter.heading}`;
   body.appendChild(heading);
 
-  const glyph = document.createElement("div");
-  glyph.className = "chapter-glyph";
-  glyph.setAttribute("aria-hidden", "true");
-  glyph.textContent = chapter.glyph;
-  body.appendChild(glyph);
-
   const lines = document.createElement("div");
   lines.className = "chapter-lines";
 
