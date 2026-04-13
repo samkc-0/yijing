@@ -6,6 +6,32 @@ const GLYPH_SCALE = 1.28;
 const ATLAS_FONT_RATIO = 0.98;
 const FACE_OUT_DURATION_MS = 520;
 
+function readThemeRgb(variableName, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+
+  if (!value) {
+    return fallback;
+  }
+
+  const parts = value.split(/\s+/).map(Number);
+
+  if (parts.length !== 3 || parts.some((part) => Number.isNaN(part))) {
+    return fallback;
+  }
+
+  return parts;
+}
+
+function readThemeColors() {
+  const fgRgb = readThemeRgb("--fg-rgb", [0, 0, 0]);
+  const bgRgb = readThemeRgb("--bg-rgb", [255, 255, 255]);
+
+  return {
+    glyphFill: `rgb(${fgRgb.join(" ")})`,
+    clear: bgRgb.map((channel) => channel / 255),
+  };
+}
+
 function buildColumnSequence(chapters, columnIndex) {
   return chapters;
 }
@@ -88,8 +114,9 @@ function createAtlas(chapters, tileSize) {
   canvas.height = atlasSize;
 
   const context = canvas.getContext("2d");
+  const theme = readThemeColors();
   context.clearRect(0, 0, atlasSize, atlasSize);
-  context.fillStyle = "#000";
+  context.fillStyle = theme.glyphFill;
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.font = `${Math.round(tileSize * ATLAS_FONT_RATIO)}px serif`;
@@ -393,7 +420,8 @@ export function renderContentsView({ chapters, onSelect }) {
       }
     }
 
-    gl.clearColor(1, 1, 1, 1);
+    const theme = readThemeColors();
+    gl.clearColor(theme.clear[0], theme.clear[1], theme.clear[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program);

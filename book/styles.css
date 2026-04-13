@@ -1,13 +1,27 @@
 :root {
-  color-scheme: only light;
-  --bg: #fff;
-  --fg: #000;
+  color-scheme: light;
+  /*
+    Developer theme switch:
+    - default: <html data-color-scheme="paper">
+    - inverse: <html data-color-scheme="ink">
+    You can also tweak the RGB triplets below for a custom palette.
+  */
+  --bg-rgb: 255 255 255;
+  --fg-rgb: 0 0 0;
+  --bg: rgb(var(--bg-rgb));
+  --fg: rgb(var(--fg-rgb));
   --hex-size: clamp(2.4rem, 4vw, 3.5rem);
   --chapter-width: calc(100vw - 0.02rem);
   --chapter-cell-font: clamp(1.12rem, 4.2vw, 1.42rem);
   --chapter-cell-min-height: min(13.75rem, calc(100vh - 0.75rem));
   --chapter-cell-padding-block: 0.62rem;
   --chapter-cell-padding-inline: 0.48rem;
+}
+
+:root[data-color-scheme="ink"] {
+  color-scheme: dark;
+  --bg-rgb: 0 0 0;
+  --fg-rgb: 255 255 255;
 }
 
 * {
