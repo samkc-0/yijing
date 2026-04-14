@@ -146,3 +146,4 @@ vite.config.ts.timestamp-*
 # Go build output
 bin/
 yijing
+.DS_Store
