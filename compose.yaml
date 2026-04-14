@@ -8,7 +8,7 @@ services:
       BOOK_DIR: /app/book
     ports:
       - "${PORT:-8088}:8088"
-    network:
+    networks:
       - appnet
 
   networks:
