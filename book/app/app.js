@@ -30,7 +30,7 @@ export function createApp(root) {
   function renderLoading() {
     const loading = document.createElement("main");
     loading.className = "screen chapter-screen";
-    loading.textContent = "Loading";
+    loading.textContent = "☯";
     return { node: loading, destroy() {} };
   }
 
